@@ -1,72 +1,293 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Senin İçin</title>
-<style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #0f172a;
-    color: white;
-    font-family: Arial;
-    flex-direction: column;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sana Özel Sürpriz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Cinzel:wght@900&display=swap');
 
-  .flower {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    animation: bloom 2s ease-out forwards;
-  }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #ffe4e1; /* Açık Toz Pembe */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-  .petal {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: pink;
-    border-radius: 50%;
-  }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
 
-  .petal:nth-child(1) { top: 0; left: 25px; }
-  .petal:nth-child(2) { top: 25px; left: 0; }
-  .petal:nth-child(3) { top: 25px; right: 0; }
-  .petal:nth-child(4) { bottom: 0; left: 25px; }
+        /* Yazı Animasyonları İçin Stil */
+        #message-container {
+            position: absolute;
+            z-index: 10;
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
+        }
 
-  .center {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    width: 50px;
-    height: 50px;
-    background: yellow;
-    border-radius: 50%;
-  }
+        .text-msg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #5c3a3a;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
 
-  @keyframes bloom {
-    from { transform: scale(0); }
-    to { transform: scale(1); }
-  }
+        .visible {
+            opacity: 1;
+        }
 
-  h1 {
-    margin-top: 30px;
-    font-size: 20px;
-  }
-</style>
+        /* Başlat Butonu */
+        #start-btn {
+            position: absolute;
+            z-index: 20;
+            padding: 15px 40px;
+            font-size: 24px;
+            background: #ff6b81;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            font-family: 'Dancing Script', cursive;
+            transition: transform 0.3s;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Stranger Things Finali */
+        .stranger-title {
+            position: absolute;
+            z-index: 15;
+            font-family: 'Cinzel', serif; /* Stranger Things benzeri font */
+            font-size: 5rem;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 40px #ff0000;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 3s, transform 10s;
+            letter-spacing: 5px;
+            display: none;
+            text-align: center;
+            top: 40%; /* Çiçeğin biraz üstüne/ortasına denk gelsin */
+        }
+        
+        .stranger-visible {
+            display: block;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Arka planda youtube gizlemek için */
+        #player {
+            display: none; 
+        }
+
+    </style>
 </head>
 <body>
 
-<div class="flower">
-  <div class="petal"></div>
-  <div class="petal"></div>
-  <div class="petal"></div>
-  <div class="petal"></div>
-  <div class="center"></div>
-</div>
+    <div id="player"></div>
 
-<h1>Sana aldığım çiçekler elbet bir gün solar. Ben sana açmaya devam eden bir tane yaptım. Seni Çok Seviyorum Sevgilim. Nice Senelerimize, Mutlu Yıllar 🌸</h1>
+    <button id="start-btn">Sürprizi Başlat ❤️</button>
 
+    <canvas id="flowerCanvas"></canvas>
+
+    <div id="message-container">
+        <div id="msg1" class="text-msg">Sana aldığım çiçekler elbet bir gün solar...</div>
+        <div id="msg2" class="text-msg">Ben sana açmaya devam eden bir tane yaptım.</div>
+        <div id="msg3" class="text-msg">Seni Çok Seviyorum Sevgilim.</div>
+        <div id="msg4" class="text-msg">Nice Senelerimize, Mutlu Yıllar 🌸</div>
+    </div>
+
+    <div id="final-title" class="stranger-title">
+        MUTLU<br>YILLAR
+    </div>
+
+    <script>
+        // --- AYARLAR ---
+        // YOUTUBE LINKININ ID KISMINI BURAYA YAZ
+        // Örnek: Link https://www.youtube.com/watch?v=dQw4w9WgXcQ ise ID: dQw4w9WgXcQ
+        const YOUTUBE_VIDEO_ID = 'lWA2pjMjpBs'; // Burayı değiştirebilirsin (Şu an 'Rihanna - Diamonds' örnek)
+        const MUSIC_VOLUME = 30; // Ses seviyesi (0-100 arası)
+
+        // --- DEĞİŞKENLER ---
+        const canvas = document.getElementById('flowerCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let animationId;
+        
+        // Ekran boyutlandırma
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- YOUTUBE API KURULUMU ---
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: https://www.youtube.com/watch?v=DF3XjEhJ40Y,
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player hazır, butona basılınca çalacak
+            event.target.setVolume(10);
+        }
+
+        // --- ÇİÇEK ÇİZİM ALGORİTMASI ---
+        // Pembe-Beyaz tonlarında, spiral büyüyen yapraklar
+        const petals = [];
+        const maxPetals = 400; // Yaprak sayısı
+        let petalCount = 0;
+
+        class Petal {
+            constructor(index) {
+                this.index = index;
+                this.angle = index * 137.5; // Altın oran açısı
+                this.radius = 10 * Math.sqrt(index);
+                this.size = Math.random() * 2 + 5;
+                this.growSize = 0;
+                
+                // Renk ayarları: Pembe ve Beyaz geçişli
+                const colorTone = Math.random();
+                if (colorTone > 0.6) {
+                    this.color = `hsl(340, 100%, ${70 + Math.random() * 20}%)`; // Parlak Pembe
+                } else {
+                    this.color = `hsl(340, 20%, ${90 + Math.random() * 10}%)`; // Kırık Beyaz / Çok açık pembe
+                }
+            }
+
+            draw() {
+                if (this.growSize < this.size) this.growSize += 0.1;
+                
+                const x = width / 2 + this.radius * Math.cos(this.angle * Math.PI / 180);
+                const y = height / 2 + this.radius * Math.sin(this.angle * Math.PI / 180);
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(this.angle * Math.PI / 180);
+                ctx.beginPath();
+                
+                // Yaprak şekli (Bezier Curves)
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(10, -10, this.growSize * 10, -5, 0, this.growSize * 15);
+                ctx.bezierCurveTo(-this.growSize * 10, -5, -10, -10, 0, 0);
+                
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = "rgba(255, 105, 180, 0.5)";
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function animateFlower() {
+            // Arka planı tamamen silmiyoruz ki iz kalsın, ama hafif temizlik iyidir
+            // ctx.clearRect(0, 0, width, height); // Bunu kapatırsak üst üste biner, sanatsal olur.
+            
+            if (petalCount < maxPetals) {
+                petals.push(new Petal(petalCount));
+                petalCount++;
+            }
+
+            petals.forEach(petal => petal.draw());
+
+            if(petalCount < maxPetals || petals[petals.length-1].growSize < petals[petals.length-1].size) {
+                 animationId = requestAnimationFrame(animateFlower);
+            }
+        }
+
+        // --- SENARYO YÖNETİMİ ---
+        const startBtn = document.getElementById('start-btn');
+        const msgs = [
+            document.getElementById('msg1'),
+            document.getElementById('msg2'),
+            document.getElementById('msg3'),
+            document.getElementById('msg4')
+        ];
+        const finalTitle = document.getElementById('final-title');
+
+        async function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function playScenario() {
+            startBtn.style.display = 'none';
+            if(player && player.playVideo) player.playVideo();
+
+            // 1. Mesaj
+            msgs[0].classList.add('visible');
+            await wait(4000);
+            msgs[0].classList.remove('visible');
+            await wait(1000);
+
+            // 2. Mesaj
+            msgs[1].classList.add('visible');
+            await wait(4000);
+            msgs[1].classList.remove('visible');
+            
+            // Çiçek açmaya başlasın
+            animateFlower();
+            await wait(2000); // Çiçek biraz büyüsün
+
+            // 3. Mesaj (Çiçeğin üstüne gelsin)
+            msgs[2].classList.add('visible');
+            await wait(4000);
+            msgs[2].classList.remove('visible');
+
+            // 4. Mesaj (Kalıcı olacak)
+            msgs[3].classList.add('visible');
+            
+            await wait(3000);
+
+            // Stranger Things Finali
+            finalTitle.classList.add('stranger-visible');
+        }
+
+        startBtn.addEventListener('click', playScenario);
+
+        // Arka plana yaprak çizimi (Basit süsleme - Yeşil yapraklar)
+        function drawLeaves() {
+            // Basit statik yapraklar
+            // Bu kısım çiçek başlamadan önce çizilebilir
+        }
+
+    </script>
 </body>
 </html>
