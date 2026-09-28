@@ -3,291 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sana Özel Sürpriz</title>
+    <title>Sana Özel Bir Sürpriz! 💕</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Cinzel:wght@900&display=swap');
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+        }
 
         body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #ffe4e1; /* Açık Toz Pembe */
+            background-color: #fff0f5;
+            background-image: radial-gradient(#ffd1dc 15%, transparent 16%), radial-gradient(#ffd1dc 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            color: #d63384;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
         }
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-
-        /* Yazı Animasyonları İçin Stil */
-        #message-container {
-            position: absolute;
-            z-index: 10;
+        .container {
+            max-width: 550px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 4px solid #ffb6c1;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.5);
             text-align: center;
-            width: 100%;
-            pointer-events: none;
+            position: relative;
         }
 
-        .text-msg {
-            font-family: 'Dancing Script', cursive;
-            font-size: 3rem;
-            color: #5c3a3a;
-            opacity: 0;
-            transition: opacity 2s ease-in-out;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-            position: absolute;
-            width: 100%;
-            top: 50%;
-            transform: translateY(-50%);
+        .kitty-decor {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
 
-        .visible {
-            opacity: 1;
+        /* Aşama Kartları */
+        .step {
+            display: none;
         }
 
-        /* Başlat Butonu */
-        #start-btn {
-            position: absolute;
-            z-index: 20;
-            padding: 15px 40px;
-            font-size: 24px;
-            background: #ff6b81;
+        .step.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #ff69b4;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px #fff;
+        }
+
+        p.desc {
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .card {
+            background: #fff;
+            border: 2px dashed #ffb6c1;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: #ff1493;
+            margin-bottom: 15px;
+        }
+
+        .counter {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .time-box {
+            background: #ffe6ee;
+            border-radius: 10px;
+            padding: 10px;
+            min-width: 65px;
+            border: 1px solid #ffb6c1;
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #d63384;
+        }
+
+        .time-box label {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .age-badge {
+            display: inline-block;
+            background: #ff69b4;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 1rem;
+            margin-top: 15px;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(255, 105, 180, 0.3);
+        }
+
+        /* Buton Stili */
+        .btn-next {
+            background-color: #ff69b4;
             color: white;
             border: none;
-            border-radius: 50px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            font-family: 'Dancing Script', cursive;
-            transition: transform 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
         }
 
-        #start-btn:hover {
-            transform: scale(1.1);
+        .btn-next:hover {
+            background-color: #ff1493;
+            transform: scale(1.05);
         }
 
-        /* Stranger Things Finali */
-        .stranger-title {
-            position: absolute;
-            z-index: 15;
-            font-family: 'Cinzel', serif; /* Stranger Things benzeri font */
-            font-size: 5rem;
-            text-transform: uppercase;
-            color: transparent;
-            -webkit-text-stroke: 2px #ff0000;
-            text-shadow: 
-                0 0 10px #ff0000,
-                0 0 20px #ff0000,
-                0 0 40px #ff0000;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 3s, transform 10s;
-            letter-spacing: 5px;
-            display: none;
-            text-align: center;
-            top: 40%; /* Çiçeğin biraz üstüne/ortasına denk gelsin */
-        }
-        
-        .stranger-visible {
-            display: block;
-            opacity: 1;
-            transform: scale(1.1);
+        .hearts {
+            color: #ff1493;
+            animation: pulse 1.5s infinite;
         }
 
-        /* Arka planda youtube gizlemek için */
-        #player {
-            display: none; 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
         }
-
     </style>
 </head>
 <body>
 
-    <div id="player"></div>
+    <div class="container">
+        <div class="kitty-decor">🎀 🐾 🐱 🐾 🎀</div>
 
-    <button id="start-btn">Sürprizi Başlat ❤️</button>
+        <!-- 1. AŞAMA: Karşılama -->
+        <div class="step active" id="step-1">
+            <h1 class="hearts">Hoş Geldin Sevgilim! ✨</h1>
+            <p class="desc">Senin için hazırladığım küçük sürprize başlamak için aşağıdaki butona tıkla 💕</p>
+            <button type="button" class="btn-next" onclick="goNext(2)">Devam Et 💖</button>
+        </div>
 
-    <canvas id="flowerCanvas"></canvas>
+        <!-- 2. AŞAMA: Doğum Günü Sayacı & Yaş -->
+        <div class="step" id="step-2">
+            <h1>🎂 İyi Ki Doğdun! 🎂</h1>
+            <div class="card">
+                <h2>🎀 Dünya Üzerindeki Süren 🎀</h2>
+                <div class="counter" id="birth-counter"></div>
+                <div class="age-badge" id="age-text">Hesaplanıyor...</div>
+            </div>
+            <button type="button" class="btn-next" onclick="goNext(3)">Diğer Sayfaya Geç 🌸</button>
+        </div>
 
-    <div id="message-container">
-        <div id="msg1" class="text-msg">Sana aldığım çiçekler elbet bir gün solar...</div>
-        <div id="msg2" class="text-msg">Ben sana açmaya devam eden bir tane yaptım.</div>
-        <div id="msg3" class="text-msg">Seni Çok Seviyorum Sevgilim.</div>
-        <div id="msg4" class="text-msg">Nice Senelerimize, Mutlu Yıllar 🌸</div>
-    </div>
+        <!-- 3. AŞAMA: Birliktelik Sayacı -->
+        <div class="step" id="step-3">
+            <h1>💖 Birlikteliğimiz 💖</h1>
+            <div class="card">
+                <h2>✨ İlk Anımızdan Beri Geçen Süre ✨</h2>
+                <div class="counter" id="love-counter"></div>
+            </div>
+            <button type="button" class="btn-next" onclick="goNext(4)">Son Sürpriz ✨</button>
+        </div>
 
-    <div id="final-title" class="stranger-title">
-        MUTLU<br>YILLAR
+        <!-- 4. AŞAMA: Mesaj & Bitiş -->
+        <div class="step" id="step-4">
+            <h1 class="hearts">Seni Çok Seviyorum! 💕</h1>
+            <p class="desc" style="color: #ff1493; font-weight: bold; margin-top: 15px;">
+                İyi ki doğdun, iyi ki hayatımdasın... <br> Birlikte daha nice güzel yaşlara! 🎀🐱🌸
+            </p>
+            <div class="kitty-decor" style="margin-top: 15px;">🎀 💖 🐾 💖 🎀</div>
+        </div>
     </div>
 
     <script>
-        // --- AYARLAR ---
-        // YOUTUBE LINKININ ID KISMINI BURAYA YAZ
-        // Örnek: Link https://www.youtube.com/watch?v=dQw4w9WgXcQ ise ID: dQw4w9WgXcQ
-        const YOUTUBE_VIDEO_ID = 'lWA2pjMjpBs'; // Burayı değiştirebilirsin (Şu an 'Rihanna - Diamonds' örnek)
-        const MUSIC_VOLUME = 30; // Ses seviyesi (0-100 arası)
-
-        // --- DEĞİŞKENLER ---
-        const canvas = document.getElementById('flowerCanvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let animationId;
-        
-        // Ekran boyutlandırma
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        // --- YOUTUBE API KURULUMU ---
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '0',
-                width: '0',
-                videoId: https://www.youtube.com/watch?v=DF3XjEhJ40Y,
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            // Player hazır, butona basılınca çalacak
-            event.target.setVolume(10);
-        }
-
-        // --- ÇİÇEK ÇİZİM ALGORİTMASI ---
-        // Pembe-Beyaz tonlarında, spiral büyüyen yapraklar
-        const petals = [];
-        const maxPetals = 400; // Yaprak sayısı
-        let petalCount = 0;
-
-        class Petal {
-            constructor(index) {
-                this.index = index;
-                this.angle = index * 137.5; // Altın oran açısı
-                this.radius = 10 * Math.sqrt(index);
-                this.size = Math.random() * 2 + 5;
-                this.growSize = 0;
-                
-                // Renk ayarları: Pembe ve Beyaz geçişli
-                const colorTone = Math.random();
-                if (colorTone > 0.6) {
-                    this.color = `hsl(340, 100%, ${70 + Math.random() * 20}%)`; // Parlak Pembe
-                } else {
-                    this.color = `hsl(340, 20%, ${90 + Math.random() * 10}%)`; // Kırık Beyaz / Çok açık pembe
-                }
+        // Aşama Geçiş Fonksiyonu
+        function goNext(stepNumber) {
+            const steps = document.getElementsByClassName('step');
+            for (let i = 0; i < steps.length; i++) {
+                steps[i].classList.remove('active');
             }
-
-            draw() {
-                if (this.growSize < this.size) this.growSize += 0.1;
-                
-                const x = width / 2 + this.radius * Math.cos(this.angle * Math.PI / 180);
-                const y = height / 2 + this.radius * Math.sin(this.angle * Math.PI / 180);
-
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate(this.angle * Math.PI / 180);
-                ctx.beginPath();
-                
-                // Yaprak şekli (Bezier Curves)
-                ctx.moveTo(0, 0);
-                ctx.bezierCurveTo(10, -10, this.growSize * 10, -5, 0, this.growSize * 15);
-                ctx.bezierCurveTo(-this.growSize * 10, -5, -10, -10, 0, 0);
-                
-                ctx.fillStyle = this.color;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = "rgba(255, 105, 180, 0.5)";
-                ctx.fill();
-                ctx.restore();
+            const targetStep = document.getElementById('step-' + stepNumber);
+            if (targetStep) {
+                targetStep.classList.add('active');
             }
         }
 
-        function animateFlower() {
-            // Arka planı tamamen silmiyoruz ki iz kalsın, ama hafif temizlik iyidir
-            // ctx.clearRect(0, 0, width, height); // Bunu kapatırsak üst üste biner, sanatsal olur.
-            
-            if (petalCount < maxPetals) {
-                petals.push(new Petal(petalCount));
-                petalCount++;
+        // Tarih Tanımlamaları
+        const birthDate = new Date(2004, 8, 30, 0, 0, 0); // 30 Eylül 2004
+        const loveDate = new Date(2022, 0, 28, 0, 0, 0);  // 28 Ocak 2022
+
+        function updateCounters() {
+            const now = new Date();
+
+            // 1. Doğum Günü Sayacı
+            const diffBirth = now - birthDate;
+            const birthDays = Math.floor(diffBirth / (1000 * 60 * 60 * 24));
+            const birthHours = Math.floor((diffBirth / (1000 * 60 * 60)) % 24);
+            const birthMinutes = Math.floor((diffBirth / (1000 * 60)) % 60);
+            const birthSeconds = Math.floor((diffBirth / 1000) % 60);
+
+            const birthElement = document.getElementById('birth-counter');
+            if (birthElement) {
+                birthElement.innerHTML = `
+                    <div class="time-box"><span>${birthDays}</span><label>Gün</label></div>
+                    <div class="time-box"><span>${birthHours}</span><label>Saat</label></div>
+                    <div class="time-box"><span>${birthMinutes}</span><label>Dakika</label></div>
+                    <div class="time-box"><span>${birthSeconds}</span><label>Saniye</label></div>
+                `;
             }
 
-            petals.forEach(petal => petal.draw());
+            // Yaş Hesabı
+            let ageYears = now.getFullYear() - birthDate.getFullYear();
+            let monthDiff = now.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birthDate.getDate())) {
+                ageYears--;
+            }
+            const ageElement = document.getElementById('age-text');
+            if (ageElement) {
+                ageElement.innerText = ✨ Şu an tam ${ageYears} yaşında! ✨;
+            }
 
-            if(petalCount < maxPetals || petals[petals.length-1].growSize < petals[petals.length-1].size) {
-                 animationId = requestAnimationFrame(animateFlower);
+            // 2. Birliktelik Sayacı
+            const diffLove = now - loveDate;
+            const loveDays = Math.floor(diffLove / (1000 * 60 * 60 * 24));
+            const loveHours = Math.floor((diffLove / (1000 * 60 * 60)) % 24);
+            const loveMinutes = Math.floor((diffLove / (1000 * 60)) % 60);
+            const loveSeconds = Math.floor((diffLove / 1000) % 60);
+
+            const loveElement = document.getElementById('love-counter');
+            if (loveElement) {
+                loveElement.innerHTML = `
+                    <div class="time-box"><span>${loveDays}</span><label>Gün</label></div>
+                    <div class="time-box"><span>${loveHours}</span><label>Saat</label></div>
+                    <div class="time-box"><span>${loveMinutes}</span><label>Dakika</label></div>
+                    <div class="time-box"><span>${loveSeconds}</span><label>Saniye</label></div>
+                `;
             }
         }
 
-        // --- SENARYO YÖNETİMİ ---
-        const startBtn = document.getElementById('start-btn');
-        const msgs = [
-            document.getElementById('msg1'),
-            document.getElementById('msg2'),
-            document.getElementById('msg3'),
-            document.getElementById('msg4')
-        ];
-        const finalTitle = document.getElementById('final-title');
-
-        async function wait(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        async function playScenario() {
-            startBtn.style.display = 'none';
-            if(player && player.playVideo) player.playVideo();
-
-            // 1. Mesaj
-            msgs[0].classList.add('visible');
-            await wait(4000);
-            msgs[0].classList.remove('visible');
-            await wait(1000);
-
-            // 2. Mesaj
-            msgs[1].classList.add('visible');
-            await wait(4000);
-            msgs[1].classList.remove('visible');
-            
-            // Çiçek açmaya başlasın
-            animateFlower();
-            await wait(2000); // Çiçek biraz büyüsün
-
-            // 3. Mesaj (Çiçeğin üstüne gelsin)
-            msgs[2].classList.add('visible');
-            await wait(4000);
-            msgs[2].classList.remove('visible');
-
-            // 4. Mesaj (Kalıcı olacak)
-            msgs[3].classList.add('visible');
-            
-            await wait(3000);
-
-            // Stranger Things Finali
-            finalTitle.classList.add('stranger-visible');
-        }
-
-        startBtn.addEventListener('click', playScenario);
-
-        // Arka plana yaprak çizimi (Basit süsleme - Yeşil yapraklar)
-        function drawLeaves() {
-            // Basit statik yapraklar
-            // Bu kısım çiçek başlamadan önce çizilebilir
-        }
-
+        setInterval(updateCounters, 1000);
+        updateCounters();
     </script>
 </body>
 </html>
